@@ -58,6 +58,7 @@ export async function POST(request: Request) {
     .insert({ 
       category_id: body.category_id,
       title: body.title,
+      color: body.color || '#3b82f6',
       sort_order 
     })
     .select(`

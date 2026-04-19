@@ -155,7 +155,8 @@ function SortableCategoryItem({
             style={{ backgroundColor: category.color }}
           />
           <span 
-            className="flex-1 truncate font-medium text-sm" 
+            className="flex-1 font-medium text-sm" 
+            style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}
             onClick={onSelect}
           >
             {category.name}
@@ -258,7 +259,6 @@ export function CategoriesSidebar({
           </div>
           <div>
             <h1 className="text-lg font-bold text-foreground">ملاحظاتي</h1>
-            <p className="text-xs text-muted-foreground">نظم أفكارك</p>
           </div>
         </div>
       </div>
@@ -344,20 +344,16 @@ export function CategoriesSidebar({
                 if (e.key === "Escape") setIsAdding(false)
               }}
             />
-            <div className="flex gap-1.5 flex-wrap">
-              {COLORS.map((color) => (
-                <button
-                  key={color}
-                  className={cn(
-                    "w-6 h-6 rounded-full transition-all duration-200",
-                    newColor === color 
-                      ? "ring-2 ring-offset-2 ring-foreground/30 scale-110" 
-                      : "hover:scale-110"
-                  )}
-                  style={{ backgroundColor: color }}
-                  onClick={() => setNewColor(color)}
-                />
-              ))}
+            <div className="flex items-center gap-2">
+              <label htmlFor="category-color-picker" className="text-sm">اختر اللون:</label>
+              <input
+                id="category-color-picker"
+                type="color"
+                value={newColor}
+                onChange={(e) => setNewColor(e.target.value)}
+                className="w-10 h-10 p-0 border-0 bg-transparent cursor-pointer"
+                style={{ background: 'none' }}
+              />
             </div>
             <div className="flex gap-2">
               <Button 

@@ -155,6 +155,7 @@ function SortablePointItem({
             "transition-colors duration-200",
             !content && "text-muted-foreground italic"
           )}
+          style={{ whiteSpace: 'pre-line' }}
           onClick={() => setIsEditing(true)}
         >
           {content || "أضف نص..."}

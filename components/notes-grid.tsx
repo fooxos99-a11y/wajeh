@@ -139,15 +139,7 @@ function SortableNoteCard({
             <>
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-lg leading-snug text-foreground">{note.title}</h3>
-                {category && (
-                  <div className="flex items-center gap-1.5 mt-2">
-                    <div
-                      className="w-2 h-2 rounded-full"
-                      style={{ backgroundColor: category.color }}
-                    />
-                    <span className="text-sm text-muted-foreground font-medium">{category.name}</span>
-                  </div>
-                )}
+                {/* تم حذف اسم الفئة من البطاقة */}
               </div>
               <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                 <Button
@@ -200,6 +192,7 @@ export function NotesGrid({
   const [isAdding, setIsAdding] = useState(false)
   const [newTitle, setNewTitle] = useState("")
   const [newCategoryId, setNewCategoryId] = useState<string>("")
+  const [newColor, setNewColor] = useState("#3b82f6")
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editTitle, setEditTitle] = useState("")
 
@@ -213,9 +206,14 @@ export function NotesGrid({
   const handleAddNote = async () => {
     const categoryId = selectedCategoryId || newCategoryId
     if (!newTitle.trim() || !categoryId) return
-    await onAddNote(categoryId, newTitle.trim())
+    await fetch("/api/notes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ category_id: categoryId, title: newTitle.trim(), color: newColor })
+    })
     setNewTitle("")
     setNewCategoryId("")
+    setNewColor("#3b82f6")
     setIsAdding(false)
   }
 
@@ -263,9 +261,7 @@ export function NotesGrid({
           <h2 className="text-3xl font-bold text-foreground">
             {selectedCategory?.name || "جميع الملاحظات"}
           </h2>
-          <p className="text-base text-muted-foreground mt-1.5">
-            {filteredNotes.length} ملاحظة
-          </p>
+          {/* تم حذف عدد الملاحظات */}
         </div>
         <Button 
           onClick={() => setIsAdding(true)} 
@@ -306,7 +302,16 @@ export function NotesGrid({
                   ))}
                 </select>
               )}
-              <div className="flex gap-3">
+              <div className="flex items-center gap-3">
+                <label htmlFor="note-color-picker" className="text-sm">لون الملاحظة:</label>
+                <input
+                  id="note-color-picker"
+                  type="color"
+                  value={newColor}
+                  onChange={(e) => setNewColor(e.target.value)}
+                  className="w-10 h-10 p-0 border-0 bg-transparent cursor-pointer"
+                  style={{ background: 'none' }}
+                />
                 <Button 
                   onClick={handleAddNote}
                   className="h-11 px-6 rounded-xl bg-primary hover:bg-primary/90 transition-colors duration-200"
