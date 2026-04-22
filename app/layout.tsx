@@ -11,9 +11,9 @@ const notoArabic = Noto_Sans_Arabic({
 });
 
 export const metadata: Metadata = {
-  title: 'ملاحظاتي',
-  description: 'تطبيق ملاحظات شخصي بسيط وفعال',
-  generator: 'v0.app',
+  title: 'الملاحظات',
+  description: 'الملاحظات',
+  generator: 'الملاحظات',
 }
 
 export default function RootLayout({
