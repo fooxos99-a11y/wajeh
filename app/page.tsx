@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { CategoriesSidebar } from "@/components/categories-sidebar"
 import { NotesGrid } from "@/components/notes-grid"
 import { Button } from "@/components/ui/button"
-import { Menu } from "lucide-react"
+import { Menu, Sparkles } from "lucide-react"
 import { toast } from "sonner"
 import type { Category, NoteWithPoints } from "@/lib/types"
 import { cn } from "@/lib/utils"
@@ -56,7 +56,7 @@ export default function NotesApp() {
       if (res.ok) {
         const newCategory = await res.json()
         setCategories((prev) => [...prev, newCategory])
-        toast.success("تم إضافة التصنيف")
+        toast.success("تم إضافة التصنيف بنجاح")
       }
     } catch (error) {
       console.error("Error adding category:", error)
@@ -173,7 +173,6 @@ export default function NotesApp() {
   }
 
   const handleReorderNotes = async (newNotes: NoteWithPoints[]) => {
-    // Update local state with the new order for filtered notes
     setNotes((prev) => {
       const noteIds = new Set(newNotes.map((n) => n.id))
       const otherNotes = prev.filter((n) => !noteIds.has(n.id))
@@ -264,7 +263,6 @@ export default function NotesApp() {
     noteId: string,
     points: { id: string; sort_order: number }[]
   ) => {
-    // Update local state
     setNotes((prev) =>
       prev.map((n) => {
         if (n.id !== noteId) return n
@@ -297,31 +295,41 @@ export default function NotesApp() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gradient-to-b from-background to-muted/30">
-        <div className="flex flex-col items-center gap-4 animate-fade-in">
-          <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
-            <div className="w-6 h-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      <div className="flex items-center justify-center min-h-screen bg-background relative overflow-hidden">
+        {/* Decorative background blur */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-primary/10 rounded-full blur-[80px] pointer-events-none" />
+        
+        <div className="flex flex-col items-center gap-6 relative z-10 animate-in fade-in duration-700">
+          <div className="relative flex items-center justify-center w-20 h-20 bg-background/50 backdrop-blur-xl rounded-2xl shadow-2xl border border-border/50">
+            <div className="w-10 h-10 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
           </div>
-          <p className="text-sm text-muted-foreground">جاري التحميل...</p>
+          <div className="flex flex-col items-center gap-2">
+            <h2 className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
+              جاري تجهيز مساحة العمل
+            </h2>
+            <p className="text-sm text-muted-foreground animate-pulse">
+              لحظات ونبدأ الإبداع...
+            </p>
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="flex h-screen bg-gradient-to-b from-background to-muted/20">
-      {/* Mobile sidebar overlay */}
+    <div className="flex h-screen bg-slate-50 dark:bg-background overflow-hidden selection:bg-primary/20 selection:text-primary">
+      {/* Mobile sidebar overlay with smooth blur transition */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-foreground/20 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
+          className="fixed inset-0 bg-background/60 backdrop-blur-md z-40 lg:hidden transition-all duration-300"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar - Added subtle borders and shadow */}
       <div
         className={cn(
-          "fixed lg:relative z-50 lg:z-auto transition-all duration-300 ease-out lg:transition-none",
+          "fixed lg:relative z-50 lg:z-auto h-full flex-shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] lg:transition-none bg-background/95 backdrop-blur-xl border-l border-border/40 shadow-2xl lg:shadow-none w-72",
           isSidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
         )}
       >
@@ -340,33 +348,49 @@ export default function NotesApp() {
       </div>
 
       {/* Main content */}
-      <main className="flex-1 flex flex-col min-w-0">
-        {/* Header */}
-        <header className="flex items-center gap-4 p-4 border-b border-border/50 bg-background/80 backdrop-blur-sm">
+      <main className="flex-1 flex flex-col min-w-0 relative">
+        {/* Modern Header */}
+        <header className="sticky top-0 z-30 flex items-center gap-4 px-6 py-4 border-b border-border/40 bg-background/70 backdrop-blur-xl transition-all">
           <Button
             variant="ghost"
             size="icon"
-            className="lg:hidden h-10 w-10 rounded-xl hover:bg-muted transition-colors duration-200"
+            className="lg:hidden h-10 w-10 rounded-xl hover:bg-muted/80 transition-colors duration-200"
             onClick={() => setIsSidebarOpen(true)}
           >
-            <Menu className="h-5 w-5" />
+            <Menu className="h-5 w-5 text-foreground" />
           </Button>
+
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <Sparkles className="h-5 w-5" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-foreground">ملاحظاتي</h1>
+              <p className="text-xs text-muted-foreground hidden sm:block">
+                نظم أفكارك ومهامك بفاعلية
+              </p>
+            </div>
+          </div>
         </header>
 
-        {/* Notes grid */}
-        <NotesGrid
-          notes={notes}
-          categories={categories}
-          selectedCategoryId={selectedCategoryId}
-          onAddNote={handleAddNote}
-          onUpdateNote={handleUpdateNote}
-          onDeleteNote={handleDeleteNote}
-          onReorderNotes={handleReorderNotes}
-          onAddPoint={handleAddPoint}
-          onUpdatePoint={handleUpdatePoint}
-          onDeletePoint={handleDeletePoint}
-          onReorderPoints={handleReorderPoints}
-        />
+        {/* Notes grid Wrapper - Added smooth scrolling and padding */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden scroll-smooth p-4 sm:p-6 lg:p-8">
+          <div className="max-w-7xl mx-auto h-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <NotesGrid
+              notes={notes}
+              categories={categories}
+              selectedCategoryId={selectedCategoryId}
+              onAddNote={handleAddNote}
+              onUpdateNote={handleUpdateNote}
+              onDeleteNote={handleDeleteNote}
+              onReorderNotes={handleReorderNotes}
+              onAddPoint={handleAddPoint}
+              onUpdatePoint={handleUpdatePoint}
+              onDeletePoint={handleDeletePoint}
+              onReorderPoints={handleReorderPoints}
+            />
+          </div>
+        </div>
       </main>
     </div>
   )
