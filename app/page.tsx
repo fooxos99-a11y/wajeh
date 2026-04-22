@@ -120,12 +120,12 @@ export default function NotesApp() {
   }
 
   // Note handlers
-  const handleAddNote = async (categoryId: string, title: string) => {
+  const handleAddNote = async (categoryId: string, title: string, color = "#3b82f6") => {
     try {
       const res = await fetch("/api/notes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ category_id: categoryId, title }),
+        body: JSON.stringify({ category_id: categoryId, title, color }),
       })
 
       if (res.ok) {
